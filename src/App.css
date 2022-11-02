@@ -1,0 +1,20 @@
+html,
+body {
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  display: block;
+  color:#404b91
+}
+
+.App {
+  width: 100vw;
+  height: 100vh;
+}
+
+
+
+
+
+
+
