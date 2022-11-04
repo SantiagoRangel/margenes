@@ -329,10 +329,11 @@ export default function Blob({ ...props }) {
 					}}
 					onPointerUp={() => {
 						gsap.to(blobRef.current.material.uniforms.uNoiseStrength, { duration: 1, value: 0.2 })
+						gsap.to(blobRef.current.material.uniforms.uFrequency, { duration: 1, value: 3 })
 					}}
 					onPointerDown={() => {
-						setClicked(true)
 						gsap.to(blobRef.current.material.uniforms.uNoiseStrength, { duration: 1, value: 2.3 })
+						gsap.to(blobRef.current.material.uniforms.uFrequency, { duration: 1, value: 8 })
 					}}
 					ref={blobRef}
 					geometry={sphereGeo}

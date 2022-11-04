@@ -50,12 +50,13 @@ const breatheAnimation = keyframes`
 `
 const Icon = styled.span`
 	position: relative;
+
 	&::before {
+		color: #404b91;
 		animation-name: ${breatheAnimation};
 		animation-duration: 2s;
 		animation-iteration-count: infinite;
 		bottom: 2rem;
-		color: #fff;
 		content: '╲╱';
 		font-size: 2rem;
 		letter-spacing: -1px;
