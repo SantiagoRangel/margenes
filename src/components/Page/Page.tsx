@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import About1 from './About1'
 import About2 from './About2'
-import Header from './Header'
 
 interface Props {}
 
@@ -13,7 +12,7 @@ const PageDiv = styled.div`
 	margin-top: 000px;
 `
 const Empty = styled.div`
-	height: 90vh;
+	height: 80vh;
 `
 export default function Page() {
 	return (

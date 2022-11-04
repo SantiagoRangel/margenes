@@ -1,19 +1,26 @@
-import React, { useRef } from 'react'
+import React, { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import './App.css'
-import Page from './components/Page/Page'
-import { Html } from '@react-three/drei'
 import Scene from './components/Scene/Scene'
-import { ThemeProvider } from './components/hooks/ThemeContext'
+import { Loader, Scroll } from '@react-three/drei'
+import { ScrollControls } from '@react-three/drei'
+import Page from './components/Page/Page'
 
 export default function App() {
 	return (
 		<div className='App'>
-			<ThemeProvider>
+			<Suspense fallback={null}>
 				<Canvas>
-					<Scene />
+					<ScrollControls pages={3} damping={4} distance={1}>
+						<Scene />
+						<Scroll html>
+							<Page />
+						</Scroll>
+					</ScrollControls>
 				</Canvas>
-			</ThemeProvider>
+			</Suspense>
+
+			<Loader />
 		</div>
 	)
 }

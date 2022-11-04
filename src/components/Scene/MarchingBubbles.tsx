@@ -1,12 +1,10 @@
-import { Color, CylinderGeometry, MathUtils } from 'three'
-import { useRef, Suspense } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Instances, Instance, Environment, ContactShadows, MarchingCubes, MarchingCube } from '@react-three/drei'
-import { EffectComposer, SSAO } from '@react-three/postprocessing'
+import { Color, MathUtils } from 'three'
+import { useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { Instances, Instance } from '@react-three/drei'
 import { useControls } from 'leva'
-import useSpline from '@splinetool/r3f-spline'
 
-const particles = Array.from({ length: 20 }, () => ({
+const particles = Array.from({ length: 35 }, () => ({
 	factor: MathUtils.randInt(20, 100),
 	speed: MathUtils.randFloat(0.01, 1),
 	xFactor: MathUtils.randFloatSpread(80),
@@ -28,7 +26,6 @@ const params = {
 	exposure: 1,
 	depthWrite: false,
 }
-const cylinderGeo = new CylinderGeometry(5, 5, 10, 64, 64)
 
 export default function MarchingBubbles() {
 	return (
@@ -62,7 +59,6 @@ export default function MarchingBubbles() {
 
 function Bubbles() {
 	const ref = useRef<any>(null!)
-	const { nodes, materials } = useSpline('https://prod.spline.design/IFI1Wnyxyp8FakmV/scene.splinecode')
 
 	useFrame((state, delta) => {
 		if (ref.current) {

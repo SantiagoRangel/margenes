@@ -1,5 +1,5 @@
-import React, { FC, useContext, useEffect, useRef } from 'react'
-import { Environment, OrbitControls, Scroll, ScrollControls, useGLTF } from '@react-three/drei'
+import React, { FC, useEffect, useRef } from 'react'
+import { Environment, OrbitControls, useGLTF, useScroll } from '@react-three/drei'
 import { useFrame, useLoader, useThree } from '@react-three/fiber'
 import { RGBELoader } from 'three-stdlib/loaders/RGBELoader'
 import { BackSide, Color, DoubleSide, MathUtils, Mesh, Vector3 } from 'three'
@@ -9,9 +9,7 @@ import Blob from './Blob'
 import MarchingBubbles from './MarchingBubbles'
 import { LayerMaterial, Depth } from 'lamina'
 import { useControls } from 'leva'
-import Page from '../Page/Page'
-import { ThemeContext } from 'leva/dist/declarations/src/context'
-import { useTheme } from '../hooks/ThemeContext'
+import useCheckMobileScreen from '../hooks/useCheckMobileScreen'
 
 interface Props {}
 
@@ -30,10 +28,10 @@ const params = {
 }
 
 const Scene: FC<Props> = () => {
-	const mobile = useTheme()
-	useEffect(() => {
-		console.log(mobile)
-	}, [mobile])
+	const mobile = useCheckMobileScreen()
+
+	const data = useScroll()
+
 	const { far, near, bgColor1, bgColor2 } = useControls({
 		far: {
 			value: 640,
@@ -71,9 +69,9 @@ const Scene: FC<Props> = () => {
 		depthWrite,
 	} = useControls('Logo, Face', {
 		transmission: {
-			value: 1.17,
+			value: 1.23,
 			min: 0,
-			max: 2,
+			max: 5,
 			step: 0.01,
 		},
 		metalness: {
@@ -155,114 +153,101 @@ const Scene: FC<Props> = () => {
 			value: true,
 		},
 	})
-	useEffect(() => {
-		document.addEventListener('mousemove', updateLight, true)
-	}, [])
 	useThree(({ camera }) => {
 		camera.position.set(0, 0.5, 10)
 	})
-	const mapPos = (x: number, in_min: number, in_max: number, out_min: number, out_max: number) => {
-		return ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
-	}
-	const updateLight = (event: any) => {
-		let x = event.clientX
-		let y = event.clientY
-		let newX = mapPos(x, 0, window.innerWidth, -2, 2)
-		let newY = mapPos(y, 0, window.innerHeight, -2, 2)
 
-		return new Vector3(newX, newY, 0)
-		// setLightPosition(newPosition)
-	}
 	const model = useGLTF('/assets/models/mgl3.glb', true) as any
 	const map: any = useLoader(RGBELoader as any, '/assets/hdr1.hdr')
 
 	const ref1 = useRef<Mesh>(null!)
 	const mglRef = useRef<Mesh>(null!)
-	const lightRef = useRef<any>(null!)
 
 	useFrame((state, delta) => {
 		// ref1.current.rotation.x = ref1.current.rotation.y = ref1.current.rotation.z += delta
-		mglRef.current.rotation.y = MathUtils.lerp(mglRef.current.rotation.y, state.mouse.x * 0.4, 0.05)
+		const offset = data.range(1 / 3, 1 / 3)
+		// if (offset === 0) {
+		mglRef.current.rotation.y = MathUtils.lerp(
+			mglRef.current.rotation.y,
+			state.mouse.x * 0.4 + offset * -1.4,
+			0.05
+		)
 		mglRef.current.rotation.x = -MathUtils.lerp(mglRef.current.rotation.x, state.mouse.y * 1, 0.5)
+		// } else {
+		// mglRef.current.rotation.y = offset * -0.2 * state.mouse.x * 0.4
+		// }
 	})
-	const { height, width } = useThree((state) => state.viewport)
 
 	return (
 		<>
 			{/* <StatsWidget /> */}
 			{/* <OrbitControls position={[1, 1, 1]} enableZoom={true} enablePan={true} enableRotate={true} /> */}
-			<ScrollControls pages={3} damping={4} distance={1}>
-				<Scroll>{/* <Objects /> */}</Scroll>
-				<Environment files='/assets/hdr1.hdr' />
-				<directionalLight position={[5, 5, 5]} castShadow></directionalLight>
-				<ambientLight intensity={0} />
-				<pointLight position={[10, 10, 5]} />
-				<pointLight position={[-10, -10, -5]} color={'#00ffff'} />
-				<mesh ref={ref1} scale={1}>
-					<sphereGeometry args={[800, 32, 32]} />
-					<LayerMaterial alpha={0} attach='material' side={BackSide}>
-						<Depth
-							colorA={bgColor1}
-							colorB={bgColor2}
-							alpha={1}
-							mode='normal'
-							near={near}
-							far={far}
-							origin={[100, 100, 100]}
-						/>
-					</LayerMaterial>
-				</mesh>
-				<mesh
-					ref={mglRef}
-					scale={1}
-					position={[-0.2, 0, 4]}
-					rotation={[0, 0, 0]}
-					visible={true}
-					geometry={model.nodes.CURVO001.geometry}
-				>
-					<meshPhysicalMaterial
-						transmission={transmission}
-						clearcoat={clearcoat}
-						clearcoatRoughness={clearcoatRoughness}
-						ior={ior}
-						reflectivity={reflectivity}
-						sheen={sheen}
-						sheenRoughness={sheenRoughness}
-						specularIntensity={specularIntensity}
-						specularColor={specularColor}
-						thickness={thickness}
-						metalness={metalness}
-						roughness={roughness}
-						attenuationColor={attenuationColor}
-						depthWrite={depthWrite}
+			<Environment files='/assets/hdr1.hdr' />
+			{/* <directionalLight position={[5, 5, 5]} castShadow></directionalLight> */}
+			<ambientLight intensity={0} />
+			<pointLight position={[10, 10, 5]} />
+			<pointLight position={[-10, -10, -5]} color={'#00ffff'} />
+			<mesh ref={ref1} scale={1}>
+				<sphereGeometry args={[800, 32, 32]} />
+				<LayerMaterial alpha={0} attach='material' side={BackSide}>
+					<Depth
+						colorA={bgColor1}
+						colorB={bgColor2}
+						alpha={1}
+						mode='normal'
+						near={near}
+						far={far}
+						origin={[100, 100, 100]}
 					/>
-				</mesh>
+				</LayerMaterial>
+			</mesh>
+			<mesh
+				ref={mglRef}
+				scale={1}
+				position={[-0.2, 0, 4]}
+				rotation={[0, 0, 0]}
+				visible={true}
+				geometry={model.nodes.CURVO001.geometry}
+			>
+				<meshPhysicalMaterial
+					transmission={transmission}
+					clearcoat={clearcoat}
+					clearcoatRoughness={clearcoatRoughness}
+					ior={ior}
+					reflectivity={reflectivity}
+					sheen={sheen}
+					sheenRoughness={sheenRoughness}
+					specularIntensity={specularIntensity}
+					specularColor={specularColor}
+					thickness={thickness}
+					metalness={metalness}
+					roughness={roughness}
+					attenuationColor={attenuationColor}
+					depthWrite={depthWrite}
+				/>
+			</mesh>
 
-				<MarchingBubbles />
-				<Face
-					map={map}
-					material={{
-						transmission,
-						clearcoat,
-						clearcoatRoughness,
-						ior,
-						reflectivity,
-						sheen,
-						sheenRoughness,
-						specularIntensity,
-						specularColor,
-						thickness,
-						metalness,
-						roughness,
-						attenuationColor,
-						depthWrite,
-					}}
-				></Face>
-				<Blob />
-				<Scroll html>
-					<Page />
-				</Scroll>
-			</ScrollControls>
+			<MarchingBubbles />
+			<Face
+				map={map}
+				material={{
+					transmission,
+					clearcoat,
+					clearcoatRoughness,
+					ior,
+					reflectivity,
+					sheen,
+					sheenRoughness,
+					specularIntensity,
+					specularColor,
+					thickness,
+					metalness,
+					roughness,
+					attenuationColor,
+					depthWrite,
+				}}
+			></Face>
+			<Blob />
 		</>
 	)
 }

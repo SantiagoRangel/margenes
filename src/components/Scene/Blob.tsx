@@ -1,9 +1,10 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { CylinderGeometry, IcosahedronGeometry, Mesh, ShaderMaterial } from 'three'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useControls } from 'leva'
 import { useScroll } from '@react-three/drei'
+import gsap from 'gsap'
 
 const noise = `
   // GLSL textureless classic 3D noise "cnoise",
@@ -198,18 +199,34 @@ const fragmentShader = `
     gl_FragColor = vec4(color, 1.0);
   }  
 `
+const mapPos = (x: number, in_min: number, in_max: number, out_min: number, out_max: number) => {
+	return ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
+}
 
 export default function Blob({ ...props }) {
-	// const blobRef = useRef<any>(null!)
 	const sphereGeo = new IcosahedronGeometry(2, 64)
-	const cylinderGeo = new CylinderGeometry(50, 50, 1000, 64, 64)
-	const visible = useRef(false)
-	const ref = useRef<Mesh>(null!)
-	const [hovered, hover] = useState(false)
-
+	const [clicked, setClicked] = useState(false)
 	const blobRef = useRef<any>(null!)
-	const { height } = useThree((state) => state.viewport)
 
+	const updateNoiseStrength = (event: { clientX: any; clientY: any }) => {
+		if (blobRef.current.material) {
+			const mousex = event.clientX
+			const mousey = event.clientY
+			// console.log(mousex - window.innerWidth / 3)
+
+			const newNoiseStrength = mapPos(mousex - window.innerWidth / 3, 0, window.innerWidth / 3, 0, 2.3)
+			blobRef.current.material.uniforms.uNoiseStrength.value = newNoiseStrength
+		}
+	}
+
+	// useEffect(() => {
+	// 	window.addEventListener('mouseup', function (event) {
+	// 		// do logic here
+	// 		if (clicked) {
+	// 			gsap.to(blobRef.current.material.uniforms.uNoiseStrength, { duration: 1, value: 0.2 })
+	// 		}
+	// 	})
+	// }, [])
 	const { uSpeed, uNoiseDensity, uNoiseStrength, uFrequency, uAmplitude, uIntensity, color1, color2, color3 } =
 		useControls('blob shader', {
 			uSpeed: {
@@ -267,6 +284,7 @@ export default function Blob({ ...props }) {
 				step: 0.02,
 			},
 		})
+
 	const blobMaterial = new ShaderMaterial({
 		uniforms: {
 			uTime: { value: 0 },
@@ -283,64 +301,47 @@ export default function Blob({ ...props }) {
 		vertexShader,
 		fragmentShader,
 	})
+
 	const data = useScroll()
 	useFrame((state, delta) => {
 		let time = state.clock.elapsedTime
 		if (blobRef.current.material.uniforms.uTime) blobRef.current.material.uniforms.uTime.value = time
-		ref.current.rotation.z += delta * 0.1
-		ref.current.rotation.x += delta * 0.1
-
-		blobRef.current.position.y = 15 * (data.range(0, 1 / 3) * -1 + 1.02)
-		ref.current.position.y = 40 * (data.range(0, 1 / 3) * -1 + 1)
+		const offset = data.range(0, 1 / 3)
+		blobRef.current.position.y = 15 * (offset * -1 + 1.02)
+		const offset2 = data.range(1 / 3, 1 / 3)
+		blobRef.current.position.x = offset2 * 5
 	})
-
 	return (
 		<>
 			<group {...props} dispose={null}>
 				<mesh
+					onPointerOver={() => {
+						gsap.to(blobRef.current.material.uniforms.uBrightness, { duration: 2, value: 0.4 })
+						gsap.to(blobRef.current.material.uniforms.uContrast, { duration: 2, value: 0.78 })
+						gsap.to(blobRef.current.material.uniforms.uOscilation, { duration: 2, value: 0.34 })
+						document.body.style.cursor = 'pointer'
+					}}
+					onPointerOut={() => {
+						gsap.to(blobRef.current.material.uniforms.uBrightness, { duration: 2, value: 1 })
+						gsap.to(blobRef.current.material.uniforms.uContrast, { duration: 2, value: 0.08 })
+						gsap.to(blobRef.current.material.uniforms.uOscilation, { duration: 2, value: 1 })
+						document.body.style.cursor = 'default'
+					}}
+					onPointerUp={() => {
+						gsap.to(blobRef.current.material.uniforms.uNoiseStrength, { duration: 1, value: 0.2 })
+					}}
+					onPointerDown={() => {
+						setClicked(true)
+						gsap.to(blobRef.current.material.uniforms.uNoiseStrength, { duration: 1, value: 2.3 })
+					}}
 					ref={blobRef}
 					geometry={sphereGeo}
 					castShadow
 					receiveShadow
 					material={blobMaterial}
-					position={[-0.6, -1, 0]}
+					position={[-0.3, -1, 0]}
 					rotation={[0, 0, Math.PI]}
 					scale={[1.5, 1.5, 1.5]}
-				></mesh>
-				{/* <mesh
-					geometry={cylinderGeo}
-					castShadow
-					material={blobMaterial}
-					receiveShadow
-					position={[-10, 0, -200]}
-					rotation={[0, 0, Math.PI]}
-				></mesh>
-				<mesh
-					geometry={cylinderGeo}
-					castShadow
-					material={blobMaterial}
-					receiveShadow
-					position={[100, 0, -400]}
-					rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}
-				></mesh>
-				<mesh
-					geometry={cylinderGeo}
-					castShadow
-					material={blobMaterial}
-					receiveShadow
-					position={[100, -200, -400]}
-					rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}
-				></mesh> */}
-				<mesh
-					ref={ref}
-					visible={false}
-					geometry={cylinderGeo}
-					castShadow
-					scale={0.05}
-					material={blobMaterial}
-					receiveShadow
-					position={[10, 10, -10]}
-					rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}
 				></mesh>
 			</group>
 		</>

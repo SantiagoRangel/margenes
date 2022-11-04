@@ -11,11 +11,25 @@ const Title = styled.p`
 	font-size: 35pt;
 	font-weight: 300;
 	letter-spacing: 11px;
+	@media only screen and (max-width: 768px) {
+		font-size: 2rem;
+		letter-spacing: 9px;
+		width: 100%;
+		margin-left: 0.2rem;
+		margin-right: 0.2rem;
+	}
 `
 
 const Text = styled.p`
 	margin-top: 2rem;
 	font-size: 20pt;
+	@media only screen and (max-width: 768px) {
+		font-size: 1rem;
+		/* letter-spacing: 9px; */
+		/* width: 100%; */
+		/* margin-left: 0.2rem; */
+		/* margin-right: 0.2rem; */
+	}
 `
 export default function About2() {
 	return (
