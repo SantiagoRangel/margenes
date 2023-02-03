@@ -4,12 +4,12 @@ import { useFrame } from '@react-three/fiber'
 import { Instances, Instance } from '@react-three/drei'
 import { useControls } from 'leva'
 
-const particles = Array.from({ length: 35 }, () => ({
+const particles = Array.from({ length: 15 }, () => ({
 	factor: MathUtils.randInt(20, 100),
 	speed: MathUtils.randFloat(0.01, 1),
-	xFactor: MathUtils.randFloatSpread(80),
-	yFactor: MathUtils.randFloatSpread(40),
-	zFactor: MathUtils.randFloatSpread(40),
+	xFactor: MathUtils.randFloatSpread(200),
+	yFactor: MathUtils.randFloatSpread(120),
+	zFactor: MathUtils.randFloatSpread(20),
 }))
 const params = {
 	color: 0xffffff,
@@ -66,106 +66,15 @@ function Bubbles() {
 			ref.current.rotation.x = MathUtils.damp(ref.current.rotation.x, (-state.mouse.y * Math.PI) / 6, 2.75, delta)
 		}
 	})
-	const {
-		transmission,
-		attenuationColor,
-		clearcoat,
-		clearcoatRoughness,
-		ior,
-		reflectivity,
-		sheen,
-		sheenRoughness,
-		specularIntensity,
-		specularColor,
-		thickness,
-		metalness,
-		roughness,
-		depthWrite,
-	} = useControls('bubbles', {
-		transmission: {
-			value: 1.08,
-			min: 0,
-			max: 2,
-			step: 0.01,
-		},
-		metalness: {
-			value: 0.1,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		roughness: {
-			value: 0.4,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		attenuationColor: {
-			value: '#ffffff',
-		},
-		clearcoat: {
-			value: 0,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		clearcoatRoughness: {
-			value: 0,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		ior: {
-			value: 1.5,
-			min: 0,
-			max: 2.4,
-			step: 0.1,
-		},
-		reflectivity: {
-			value: 0.5,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		sheen: {
-			value: 0,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		sheenRoughness: {
-			value: 1,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		sheenColor: {
-			value: '#ffffff',
-		},
-		specularIntensity: {
-			value: 0,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		specularColor: {
-			value: '#ffffff',
-		},
-		thickness: {
-			value: 4,
-			min: 0,
-			max: 20,
-			step: 0.1,
-		},
-		depthWrite: {
-			value: false,
-		},
-	})
+
 	return (
-		<Instances limit={particles.length} ref={ref} position={[0, 10, 0]}>
+		<Instances limit={particles.length} ref={ref} position={[0, 10, -20]}>
 			{/* <cylinderGeometry args={[0.5, 0.5, 0.4, 64, 64]}></cylinderGeometry> */}
 			<sphereGeometry></sphereGeometry>
-			<meshPhysicalMaterial
+			<meshBasicMaterial color={'#01b901'}></meshBasicMaterial>
+
+			{/* <MeshTransmissionMaterial background={new Color(config.bg)} {...config} /> */}
+			{/* <meshPhysicalMaterial
 				transmission={transmission}
 				clearcoat={clearcoat}
 				clearcoatRoughness={clearcoatRoughness}
@@ -180,10 +89,10 @@ function Bubbles() {
 				roughness={roughness}
 				attenuationColor={attenuationColor}
 				depthWrite={depthWrite}
-			/>
-			{/* <meshPhysicalMaterial depthWrite={false} transmission={1} thickness={10} roughness={0.65} /> */}
+			/> */}
+
 			{particles.map((data, i) => (
-				<Bubble key={i} {...data} />
+				<Bubble key={i} {...data}></Bubble>
 			))}
 		</Instances>
 	)
@@ -199,12 +108,12 @@ function Bubble({ factor, speed, xFactor, yFactor, zFactor }: Parameters) {
 	const ref = useRef<any>(null!)
 	useFrame((state) => {
 		const t = factor + state.clock.elapsedTime * (speed / 12)
-		ref.current.scale.setScalar(Math.max(1.5, Math.cos(t) * 5))
+		ref.current.scale.setScalar(Math.max(2, Math.cos(t) * 5))
 		ref.current.position.set(
 			Math.cos(t) + Math.sin(t * 1) / 10 + xFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 1) * factor) / 10,
 			Math.sin(t) + Math.cos(t * 2) / 10 + yFactor + Math.sin((t / 10) * factor) + (Math.cos(t * 2) * factor) / 10,
 			Math.sin(t) + Math.cos(t * 2) / 10 + zFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 3) * factor) / 10
 		)
 	})
-	return <Instance ref={ref} />
+	return <Instance ref={ref}></Instance>
 }

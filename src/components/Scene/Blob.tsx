@@ -266,19 +266,19 @@ export default function Blob({ ...props }) {
 				step: 0.1,
 			},
 			color1: {
-				value: 1,
+				value: 0.48,
 				min: 0,
 				max: 1,
 				step: 0.02,
 			},
 			color2: {
-				value: 0.08,
+				value: 0.64,
 				min: 0,
 				max: 1,
 				step: 0.02,
 			},
 			color3: {
-				value: 0.1,
+				value: 0.44,
 				min: 0,
 				max: 1,
 				step: 0.02,
@@ -315,16 +315,18 @@ export default function Blob({ ...props }) {
 		<>
 			<group {...props} dispose={null}>
 				<mesh
+					visible={true}
 					onPointerOver={() => {
-						gsap.to(blobRef.current.material.uniforms.uBrightness, { duration: 2, value: 0.4 })
-						gsap.to(blobRef.current.material.uniforms.uContrast, { duration: 2, value: 0.78 })
-						gsap.to(blobRef.current.material.uniforms.uOscilation, { duration: 2, value: 0.34 })
-						document.body.style.cursor = 'pointer'
-					}}
-					onPointerOut={() => {
 						gsap.to(blobRef.current.material.uniforms.uBrightness, { duration: 2, value: 1 })
 						gsap.to(blobRef.current.material.uniforms.uContrast, { duration: 2, value: 0.08 })
 						gsap.to(blobRef.current.material.uniforms.uOscilation, { duration: 2, value: 1 })
+
+						document.body.style.cursor = 'pointer'
+					}}
+					onPointerOut={() => {
+						gsap.to(blobRef.current.material.uniforms.uBrightness, { duration: 2, value: 0.48 })
+						gsap.to(blobRef.current.material.uniforms.uContrast, { duration: 2, value: 0.64 })
+						gsap.to(blobRef.current.material.uniforms.uOscilation, { duration: 2, value: 0.44 })
 						document.body.style.cursor = 'default'
 					}}
 					onPointerUp={() => {

@@ -1,17 +1,27 @@
-html,
+ html,
 body {
+  width: 100vw;
   margin: 0;
   overflow-x: hidden;
   overflow-y: scroll;
   display: block;
-  color:#404b91
-}
+  height: 100vh;
+  scroll-behavior: smooth;
+ } 
+
 
 .App {
   width: 100vw;
   height: 100vh;
 }
 
+
+
+@font-face {
+  font-family: 'TSKirt';
+  src: local('TSKirt'), url(./fonts/TSKirt-Regular.otf) format('opentype');
+  
+}
 
 
 

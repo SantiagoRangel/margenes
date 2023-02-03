@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef } from 'react'
-import { Environment, OrbitControls, useGLTF, useScroll } from '@react-three/drei'
+import { Environment, MeshTransmissionMaterial, OrbitControls, useGLTF, useScroll } from '@react-three/drei'
 import { useFrame, useLoader, useThree } from '@react-three/fiber'
 import { RGBELoader } from 'three-stdlib/loaders/RGBELoader'
 import { BackSide, Color, DoubleSide, MathUtils, Mesh, Vector3 } from 'three'
@@ -10,6 +10,7 @@ import MarchingBubbles from './MarchingBubbles'
 import { LayerMaterial, Depth } from 'lamina'
 import { useControls } from 'leva'
 import useCheckMobileScreen from '../hooks/useCheckMobileScreen'
+import MarchingBubblesTransmission from './MarchingBubbleTransmission'
 
 interface Props {}
 
@@ -46,112 +47,133 @@ const Scene: FC<Props> = () => {
 			step: 1,
 		},
 		bgColor1: {
-			value: '#fe7ff6',
+			value: '#070049',
 		},
 		bgColor2: {
-			value: '#00ffff',
+			value: '#016c08',
 		},
 	})
-	const {
-		transmission,
-		attenuationColor,
-		clearcoat,
-		clearcoatRoughness,
-		ior,
-		reflectivity,
-		sheen,
-		sheenRoughness,
-		specularIntensity,
-		specularColor,
-		thickness,
-		metalness,
-		roughness,
-		depthWrite,
-	} = useControls('Logo, Face', {
-		transmission: {
-			value: 1.23,
-			min: 0,
-			max: 5,
-			step: 0.01,
-		},
-		metalness: {
-			value: 0.1,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		roughness: {
-			value: 0.2,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		attenuationColor: {
-			value: '#ffffff',
-		},
-		clearcoat: {
-			value: 0,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		clearcoatRoughness: {
-			value: 0,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		ior: {
-			value: 3,
-			min: 0,
-			max: 2.4,
-			step: 0.1,
-		},
-		reflectivity: {
-			value: 0.5,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		sheen: {
-			value: 0,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		sheenRoughness: {
-			value: 1,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		sheenColor: {
-			value: '#ffffff',
-		},
-		specularIntensity: {
-			value: 0.4,
-			min: 0,
-			max: 1,
-			step: 0.1,
-		},
-		specularColor: {
-			value: '#ffffff',
-		},
-		thickness: {
-			value: 0.9,
-			min: 0,
-			max: 20,
-			step: 0.1,
-		},
-		envMapIntensity: {
-			value: 1,
-			min: 0,
-			max: 20,
-			step: 0.1,
-		},
-		depthWrite: {
-			value: true,
-		},
+	// const {
+	// 	transmission,
+	// 	attenuationColor,
+	// 	clearcoat,
+	// 	clearcoatRoughness,
+	// 	ior,
+	// 	reflectivity,
+	// 	sheen,
+	// 	sheenRoughness,
+	// 	specularIntensity,
+	// 	specularColor,
+	// 	thickness,
+	// 	metalness,
+	// 	roughness,
+	// 	depthWrite,
+	// } = useControls('Logo, Face', {
+	// 	transmission: {
+	// 		value: 1.01,
+	// 		min: 0,
+	// 		max: 5,
+	// 		step: 0.01,
+	// 	},
+	// 	metalness: {
+	// 		value: 0,
+	// 		min: 0,
+	// 		max: 1,
+	// 		step: 0.01,
+	// 	},
+	// 	roughness: {
+	// 		value: 0.38,
+	// 		min: 0,
+	// 		max: 1,
+	// 		step: 0.01,
+	// 	},
+	// 	attenuationColor: {
+	// 		value: '#ffffff',
+	// 	},
+	// 	clearcoat: {
+	// 		value: 0.3,
+	// 		min: 0,
+	// 		max: 1,
+	// 		step: 0.1,
+	// 	},
+	// 	clearcoatRoughness: {
+	// 		value: 0.4,
+	// 		min: 0,
+	// 		max: 1,
+	// 		step: 0.1,
+	// 	},
+	// 	ior: {
+	// 		value: 0.6,
+	// 		min: 1,
+	// 		max: 2.3,
+	// 		step: 0.1,
+	// 	},
+	// 	reflectivity: {
+	// 		value: 0.5,
+	// 		min: 0,
+	// 		max: 1,
+	// 		step: 0.1,
+	// 	},
+	// 	sheen: {
+	// 		value: 0,
+	// 		min: 0,
+	// 		max: 1,
+	// 		step: 0.1,
+	// 	},
+	// 	sheenRoughness: {
+	// 		value: 1,
+	// 		min: 0,
+	// 		max: 1,
+	// 		step: 0.1,
+	// 	},
+	// 	sheenColor: {
+	// 		value: '#ffffff',
+	// 	},
+	// 	specularIntensity: {
+	// 		value: 0.4,
+	// 		min: 0,
+	// 		max: 1,
+	// 		step: 0.1,
+	// 	},
+	// 	specularColor: {
+	// 		value: '#ffffff',
+	// 	},
+	// 	thickness: {
+	// 		value: 0.9,
+	// 		min: 0,
+	// 		max: 20,
+	// 		step: 0.1,
+	// 	},
+	// 	envMapIntensity: {
+	// 		value: 1,
+	// 		min: 0,
+	// 		max: 20,
+	// 		step: 0.1,
+	// 	},
+	// 	depthWrite: {
+	// 		value: true,
+	// 	},
+	// })
+	const config = useControls('logo', {
+		box: false,
+		meshPhysicalMaterial: false,
+		transmissionSampler: false,
+		backside: false,
+		samples: { value: 10, min: 1, max: 32, step: 1 },
+		resolution: { value: 2048, min: 256, max: 2048, step: 256 },
+		transmission: { value: 1, min: 0, max: 1 },
+		roughness: { value: 0.0, min: 0, max: 1, step: 0.01 },
+		thickness: { value: 3.5, min: 0, max: 10, step: 0.01 },
+		ior: { value: 1.5, min: 1, max: 5, step: 0.01 },
+		chromaticAberration: { value: 0.06, min: 0, max: 1 },
+		anisotropy: { value: 0.1, min: 0, max: 1, step: 0.01 },
+		distortion: { value: 0.0, min: 0, max: 1, step: 0.01 },
+		distortionScale: { value: 0.3, min: 0.01, max: 1, step: 0.01 },
+		temporalDistortion: { value: 0.5, min: 0, max: 1, step: 0.01 },
+		attenuationDistance: { value: 0.5, min: 0, max: 10, step: 0.01 },
+		attenuationColor: '#ffffff',
+		color: '#c9ffa1',
+		bg: '#839681',
 	})
 	useThree(({ camera }) => {
 		camera.position.set(0, 0.5, 10)
@@ -162,9 +184,10 @@ const Scene: FC<Props> = () => {
 
 	const ref1 = useRef<Mesh>(null!)
 	const mglRef = useRef<Mesh>(null!)
+	const mglRef2 = useRef<Mesh>(null!)
 
 	useFrame((state, delta) => {
-		// ref1.current.rotation.x = ref1.current.rotation.y = ref1.current.rotation.z += delta
+		ref1.current.rotation.x = ref1.current.rotation.y = ref1.current.rotation.z += delta
 		const offset = data.range(1 / 3, 1 / 3)
 		// if (offset === 0) {
 		mglRef.current.rotation.y = MathUtils.lerp(
@@ -173,6 +196,12 @@ const Scene: FC<Props> = () => {
 			0.05
 		)
 		mglRef.current.rotation.x = -MathUtils.lerp(mglRef.current.rotation.x, state.mouse.y * 1, 0.5)
+		// mglRef2.current.rotation.y = MathUtils.lerp(
+		// 	mglRef2.current.rotation.y,
+		// 	state.mouse.x * 0.4 + offset * -1.4,
+		// 	0.05
+		// )
+		// mglRef2.current.rotation.x = -MathUtils.lerp(mglRef2.current.rotation.x, state.mouse.y * 1, 0.5)
 		// } else {
 		// mglRef.current.rotation.y = offset * -0.2 * state.mouse.x * 0.4
 		// }
@@ -201,15 +230,22 @@ const Scene: FC<Props> = () => {
 					/>
 				</LayerMaterial>
 			</mesh>
+			<mesh visible={config.box} scale={3} position={[0, 0.4, 6]}>
+				<boxGeometry args={[1, 1, 1]}></boxGeometry>
+				{/* <meshBasicMaterial color={'#ffffff'}></meshBasicMaterial> */}
+				<MeshTransmissionMaterial background={new Color(config.bg)} {...config} />
+			</mesh>
 			<mesh
 				ref={mglRef}
 				scale={1}
-				position={[-0.2, 0, 4]}
+				position={[-0.2, 0, 6]}
 				rotation={[0, 0, 0]}
 				visible={true}
 				geometry={model.nodes.CURVO001.geometry}
 			>
-				<meshPhysicalMaterial
+				<MeshTransmissionMaterial background={new Color(config.bg)} {...config} />
+
+				{/* <meshPhysicalMaterial
 					transmission={transmission}
 					clearcoat={clearcoat}
 					clearcoatRoughness={clearcoatRoughness}
@@ -224,29 +260,23 @@ const Scene: FC<Props> = () => {
 					roughness={roughness}
 					attenuationColor={attenuationColor}
 					depthWrite={depthWrite}
-				/>
+				/> */}
 			</mesh>
-
+			{/* <mesh
+				ref={mglRef2}
+				scale={0.95}
+				position={[-0.2, 0, 4]}
+				rotation={[0, 0, 0]}
+				visible={true}
+				geometry={model.nodes.CURVO001.geometry}
+			>
+				<meshPhongMaterial color={'#00ff00'}></meshPhongMaterial>
+			
+			</mesh> */}
 			<MarchingBubbles />
-			<Face
-				map={map}
-				material={{
-					transmission,
-					clearcoat,
-					clearcoatRoughness,
-					ior,
-					reflectivity,
-					sheen,
-					sheenRoughness,
-					specularIntensity,
-					specularColor,
-					thickness,
-					metalness,
-					roughness,
-					attenuationColor,
-					depthWrite,
-				}}
-			></Face>
+			<MarchingBubblesTransmission />
+
+			<Face map={map}></Face>
 			<Blob />
 		</>
 	)
