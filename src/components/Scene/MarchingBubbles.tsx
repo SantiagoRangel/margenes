@@ -4,12 +4,12 @@ import { useFrame } from '@react-three/fiber'
 import { Instances, Instance } from '@react-three/drei'
 import { useControls } from 'leva'
 
-const particles = Array.from({ length: 15 }, () => ({
+const particles = Array.from({ length: 20 }, () => ({
 	factor: MathUtils.randInt(20, 100),
 	speed: MathUtils.randFloat(0.01, 1),
-	xFactor: MathUtils.randFloatSpread(200),
-	yFactor: MathUtils.randFloatSpread(120),
-	zFactor: MathUtils.randFloatSpread(20),
+	xFactor: MathUtils.randFloatSpread(50),
+	yFactor: MathUtils.randFloatSpread(80),
+	zFactor: MathUtils.randFloatSpread(10),
 }))
 const params = {
 	color: 0xffffff,
@@ -111,8 +111,18 @@ function Bubble({ factor, speed, xFactor, yFactor, zFactor }: Parameters) {
 		ref.current.scale.setScalar(Math.max(2, Math.cos(t) * 5))
 		ref.current.position.set(
 			Math.cos(t) + Math.sin(t * 1) / 10 + xFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 1) * factor) / 10,
-			Math.sin(t) + Math.cos(t * 2) / 10 + yFactor + Math.sin((t / 10) * factor) + (Math.cos(t * 2) * factor) / 10,
-			Math.sin(t) + Math.cos(t * 2) / 10 + zFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 3) * factor) / 10
+			Math.sin(t) +
+				Math.cos(t * 2) / 10 +
+				yFactor +
+				Math.sin((t / 10) * factor) +
+				(Math.cos(t * 2) * factor) / 10 -
+				10,
+			Math.sin(t) +
+				Math.cos(t * 2) / 10 +
+				zFactor +
+				Math.cos((t / 10) * factor) +
+				(Math.sin(t * 3) * factor) / 10 -
+				10
 		)
 	})
 	return <Instance ref={ref}></Instance>

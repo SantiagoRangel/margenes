@@ -4,11 +4,11 @@ import { useFrame } from '@react-three/fiber'
 import { Instances, Instance, MeshTransmissionMaterial } from '@react-three/drei'
 import { useControls } from 'leva'
 
-const particles = Array.from({ length: 10 }, () => ({
+const particles = Array.from({ length: 15 }, () => ({
 	factor: MathUtils.randInt(20, 100),
 	speed: MathUtils.randFloat(0.01, 1),
-	xFactor: MathUtils.randFloatSpread(80),
-	yFactor: MathUtils.randFloatSpread(40),
+	xFactor: MathUtils.randFloatSpread(100),
+	yFactor: MathUtils.randFloatSpread(70),
 	zFactor: MathUtils.randFloatSpread(40),
 }))
 
@@ -114,7 +114,12 @@ function Bubble({ factor, speed, xFactor, yFactor, zFactor }: Parameters) {
 		ref.current.scale.setScalar(Math.max(5, Math.cos(t) * 5))
 		ref.current.position.set(
 			Math.cos(t) + Math.sin(t * 1) / 10 + xFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 1) * factor) / 10,
-			Math.sin(t) + Math.cos(t * 2) / 10 + yFactor + Math.sin((t / 10) * factor) + (Math.cos(t * 2) * factor) / 10,
+			Math.sin(t) +
+				Math.cos(t * 2) / 10 +
+				yFactor +
+				Math.sin((t / 10) * factor) +
+				(Math.cos(t * 2) * factor) / 10 -
+				10,
 			Math.sin(t) + Math.cos(t * 2) / 10 + zFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 3) * factor) / 10
 		)
 	})

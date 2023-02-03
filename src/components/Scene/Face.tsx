@@ -15,27 +15,27 @@ const Face: FC<Props> = ({ map, material }) => {
 	const faceRef = useRef<Mesh>(null!)
 	const data = useScroll()
 	const { camera } = useThree()
-	const action = useRef<THREE.AnimationAction>(null!)
-	const mixer = useRef<THREE.AnimationMixer>(null!)
-	console.log(model)
-	console.log(mixer)
+	// const action = useRef<THREE.AnimationAction>(null!)
+	// const mixer = useRef<THREE.AnimationMixer>(null!)
+	// console.log(model)
+	// console.log(mixer)
 
-	useFrame((state, delta) => {
-		if (!mixer.current || !action.current) return
+	// useFrame((state, delta) => {
+	// 	if (!mixer.current || !action.current) return
 
-		if (mixer.current.time > 4.6) {
-			;(action.current as THREE.AnimationAction).stop()
-			mixer.current.time = 0
-			;(action.current as THREE.AnimationAction).play()
-		}
+	// 	if (mixer.current.time > 4.6) {
+	// 		;(action.current as THREE.AnimationAction).stop()
+	// 		mixer.current.time = 0
+	// 		;(action.current as THREE.AnimationAction).play()
+	// 	}
 
-		mixer.current.update(delta)
-		let a = data.range(1 / 3, 2 / 3)
-		camera.rotation.y = (Math.PI / 4) * a
-		camera.position.x = a * -25 + 0
-		camera.position.y = a * 0 + 0.5
-		camera.position.z = a * 0 + 10
-	})
+	// 	mixer.current.update(delta)
+	// 	let a = data.range(1 / 3, 2 / 3)
+	// 	camera.rotation.y = (Math.PI / 4) * a
+	// 	camera.position.x = a * -25 + 0
+	// 	camera.position.y = a * 0 + 0.5
+	// 	camera.position.z = a * 0 + 10
+	// })
 	const config = useControls('face', {
 		meshPhysicalMaterial: false,
 		transmissionSampler: false,
@@ -56,12 +56,12 @@ const Face: FC<Props> = ({ map, material }) => {
 		color: '#c9ffa1',
 		bg: '#839681',
 	})
-	useEffect(() => {
-		mixer.current = new THREE.AnimationMixer(model)
-		action.current = mixer.current.clipAction(model.animations[0])
-		action.current.loop = THREE.LoopRepeat
-		action.current.play()
-	}, [])
+	// useEffect(() => {
+	// 	mixer.current = new THREE.AnimationMixer(model)
+	// 	action.current = mixer.current.clipAction(model.animations[0])
+	// 	action.current.loop = THREE.LoopRepeat
+	// 	action.current.play()
+	// }, [])
 
 	return (
 		<>
